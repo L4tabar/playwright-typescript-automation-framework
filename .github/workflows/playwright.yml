@@ -8,6 +8,13 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,7 +32,9 @@ jobs:
         run: npx playwright test
       - name: Generate Allure report
         if: ${{ always() }}
-        run: npx allure generate --clean -o allure-report allure-results
+        run: |
+          rm -rf allure-report
+          npx allure generate -o allure-report allure-results
       - name: Upload Allure report artifact
         uses: actions/upload-artifact@v4
         if: ${{ always() }}
@@ -39,7 +48,8 @@ jobs:
         with:
           path: allure-report/
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
-        if: ${{ always() }}
+        if: ${{ always() && github.event_name != 'pull_request' }}
         with:
-          preview: ${{ github.event_name == 'pull_request' }}
+          preview: false
