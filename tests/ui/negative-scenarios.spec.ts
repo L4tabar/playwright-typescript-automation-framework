@@ -12,17 +12,17 @@ test.describe('Negative Scenario Tests', () => {
   let cartPage: CartPage;
   let checkoutPage: CheckoutPage;
 
-  test.beforeEach(async ({ pageWithCookieHandling }) => {
-    loginPage = new LoginPage(pageWithCookieHandling);
-    homePage = new HomePage(pageWithCookieHandling);
-    cartPage = new CartPage(pageWithCookieHandling);
-    checkoutPage = new CheckoutPage(pageWithCookieHandling);
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    homePage = new HomePage(page);
+    cartPage = new CartPage(page);
+    checkoutPage = new CheckoutPage(page);
 
-    await pageWithCookieHandling.goto(BASE_URL);
+    await page.goto(BASE_URL);
   });
 
   test('TC013: Should reject login with invalid email format', async ({
-    pageWithCookieHandling,
+    page,
   }) => {
     await test.step('Navigate to login page', async () => {
       await homePage.navigateToSignupLogin();
@@ -32,11 +32,11 @@ test.describe('Negative Scenario Tests', () => {
       await loginPage.login('not-an-email', 'password123');
 
       // Should remain on login page or show error
-      await expect(pageWithCookieHandling.url()).toContain('/login');
+      await expect(page.url()).toContain('/login');
     });
   });
 
-  test('TC014: Should reject login with empty credentials', async ({ pageWithCookieHandling }) => {
+  test('TC014: Should reject login with empty credentials', async ({ page }) => {
     await test.step('Navigate to login page', async () => {
       await homePage.navigateToSignupLogin();
     });
@@ -45,11 +45,11 @@ test.describe('Negative Scenario Tests', () => {
       await loginPage.login('', '');
 
       // Should remain on login page
-      await expect(pageWithCookieHandling.url()).toContain('/login');
+      await expect(page.url()).toContain('/login');
     });
   });
 
-  test('TC015: Should reject login with incorrect password', async ({ pageWithCookieHandling }) => {
+  test('TC015: Should reject login with incorrect password', async ({ page }) => {
     await test.step('Navigate to login page', async () => {
       await homePage.navigateToSignupLogin();
     });
@@ -59,14 +59,14 @@ test.describe('Negative Scenario Tests', () => {
 
       // Check for error message or remaining on login page
       const isErrorVisible = await loginPage.isLoginErrorVisible();
-      const isOnLoginPage = pageWithCookieHandling.url().includes('/login');
+      const isOnLoginPage = page.url().includes('/login');
 
       expect(isErrorVisible || isOnLoginPage).toBeTruthy();
     });
   });
 
   test('TC016: Should handle SQL injection attempts in login', async ({
-    pageWithCookieHandling,
+    page,
   }) => {
     await test.step('Navigate to login page', async () => {
       await homePage.navigateToSignupLogin();
@@ -77,7 +77,7 @@ test.describe('Negative Scenario Tests', () => {
       await loginPage.login(sqlInjectionPayload, 'password');
 
       // Should reject the login attempt and stay on login page
-      await expect(pageWithCookieHandling.url()).toContain('/login');
+      await expect(page.url()).toContain('/login');
     });
 
     await test.step('Attempt SQL injection in password field', async () => {
@@ -85,11 +85,11 @@ test.describe('Negative Scenario Tests', () => {
       await loginPage.login('test@example.com', sqlInjectionPayload);
 
       // Should reject the login attempt
-      await expect(pageWithCookieHandling.url()).toContain('/login');
+      await expect(page.url()).toContain('/login');
     });
   });
 
-  test('TC017: Should handle XSS attempts in registration', async ({ pageWithCookieHandling }) => {
+  test('TC017: Should handle XSS attempts in registration', async ({ page }) => {
     await test.step('Navigate to signup page', async () => {
       await homePage.navigateToSignupLogin();
     });
@@ -102,7 +102,7 @@ test.describe('Negative Scenario Tests', () => {
 
       // Should either sanitize the input or reject it
       // Verify no alert popup appears
-      const alertPresent = await pageWithCookieHandling.evaluate(() => {
+      const alertPresent = await page.evaluate(() => {
         return typeof (globalThis as any).alert !== 'undefined';
       });
 
@@ -110,18 +110,19 @@ test.describe('Negative Scenario Tests', () => {
     });
   });
 
-  test('TC018: Should prevent duplicate user registration', async ({ pageWithCookieHandling }) => {
-    const user = UserFactory.createUserWithEmail('duplicate@test.com');
+  test('TC018: Should prevent duplicate user registration', async ({ page }) => {
+    const timestamp = Date.now();
+    const user = UserFactory.createUserWithEmail(`duplicate${timestamp}@test.com`);
 
     await test.step('Register user first time', async () => {
       await homePage.navigateToSignupLogin();
       await loginPage.signup(user.name, user.email);
 
       // If successful, complete registration
-      const isOnSignupForm = pageWithCookieHandling.url().includes('/signup');
+      const isOnSignupForm = page.url().includes('/signup');
       if (isOnSignupForm) {
         await loginPage.fillSignupForm(user);
-        await pageWithCookieHandling.getByRole('link', { name: 'Continue' }).click();
+        await page.getByRole('link', { name: 'Continue' }).click();
         await homePage.logout();
       }
     });
@@ -136,12 +137,12 @@ test.describe('Negative Scenario Tests', () => {
         await expect(loginPage.signupErrorMessage).toBeVisible();
       } else {
         // Or should remain on login page without proceeding to signup form
-        await expect(pageWithCookieHandling.url()).toContain('/login');
+        await expect(page.url()).toContain('/login');
       }
     });
   });
 
-  test('TC019: Should handle checkout with empty cart', async ({ pageWithCookieHandling }) => {
+  test('TC019: Should handle checkout with empty cart', async ({ page }) => {
     await test.step('Navigate to empty cart', async () => {
       await homePage.navigateToCart();
     });
@@ -170,7 +171,7 @@ test.describe('Negative Scenario Tests', () => {
     });
   });
 
-  test('TC020: Should handle invalid payment details', async ({ pageWithCookieHandling }) => {
+  test('TC020: Should handle invalid payment details', async ({ page }) => {
     await test.step('Setup: Create user and add product to cart', async () => {
       const user = UserFactory.createRandomUser();
 
@@ -178,12 +179,12 @@ test.describe('Negative Scenario Tests', () => {
       await homePage.navigateToSignupLogin();
       await loginPage.signup(user.name, user.email);
       await loginPage.fillSignupForm(user);
-      await pageWithCookieHandling.getByRole('link', { name: 'Continue' }).click();
+      await page.getByRole('link', { name: 'Continue' }).click();
 
       // Add product to cart
       await homePage.navigateToProducts();
       await homePage.addFirstProductToCart();
-      await pageWithCookieHandling.getByRole('button', { name: 'Continue Shopping' }).click();
+      await page.getByRole('button', { name: 'Continue Shopping' }).click();
       await homePage.navigateToCart();
       await cartPage.proceedToCheckout();
     });
