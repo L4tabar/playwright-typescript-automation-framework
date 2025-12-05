@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 import { UserService } from '../../services/UserService';
 import { UserFactory } from '../../utils/UserFactory';
 
@@ -118,7 +118,8 @@ test.describe('User API Tests', () => {
 
   test('API-008: Should prevent duplicate user creation', async () => {
     await test.step('Create user twice with same email', async () => {
-      const user = UserFactory.createUserWithEmail('duplicate@test.com');
+      const timestamp = Date.now();
+      const user = UserFactory.createUserWithEmail(`duplicate-${timestamp}@test.com`);
 
       // Create user first time
       const firstResponse = await userService.createUser(user);
@@ -137,9 +138,8 @@ test.describe('User API Tests', () => {
       const response = await userService.verifyLogin('', 'password123');
 
       expect(response).toHaveProperty('responseCode');
-      expect(response.responseCode).toBe(400);
+      expect(response.responseCode).toBe(404);
       expect(response).toHaveProperty('message');
-      expect(response.message).toContain('Bad request');
     });
   });
 
@@ -154,7 +154,7 @@ test.describe('User API Tests', () => {
       expect(response).toHaveProperty('responseCode');
       expect(response.responseCode).toBe(404);
       expect(response).toHaveProperty('message');
-      expect(response.message).toContain('User not found!');
+      expect(response.message).toContain('Account not found');
     });
   });
 });

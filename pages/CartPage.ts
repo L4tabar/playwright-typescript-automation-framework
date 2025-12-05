@@ -98,6 +98,8 @@ export class CartPage {
   }
 
   async proceedToCheckout() {
+    // Wait for any overlay to disappear first
+    await this.page.locator('.fc-consent-root').waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
     await this.proceedToCheckoutButton.click();
   }
 

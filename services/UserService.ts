@@ -9,52 +9,68 @@ export class UserService {
     this.request = request;
   }
 
+  private buildFormData(data: Record<string, string | undefined>): string {
+    const params = new URLSearchParams();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined) {
+        params.append(key, value);
+      }
+    });
+    return params.toString();
+  }
+
   async createUser(user: User): Promise<any> {
-    const formData = new globalThis.FormData();
-    formData.append('name', user.name);
-    formData.append('email', user.email);
-    if (user.password) formData.append('password', user.password);
-    if (user.title) formData.append('title', user.title);
-    if (user.birth_date) formData.append('birth_date', user.birth_date);
-    if (user.birth_month) formData.append('birth_month', user.birth_month);
-    if (user.birth_year) formData.append('birth_year', user.birth_year);
-    if (user.firstname) formData.append('firstname', user.firstname);
-    if (user.lastname) formData.append('lastname', user.lastname);
-    if (user.company) formData.append('company', user.company);
-    if (user.address1) formData.append('address1', user.address1);
-    if (user.address2) formData.append('address2', user.address2);
-    if (user.country) formData.append('country', user.country);
-    if (user.zipcode) formData.append('zipcode', user.zipcode);
-    if (user.state) formData.append('state', user.state);
-    if (user.city) formData.append('city', user.city);
-    if (user.mobile_number) formData.append('mobile_number', user.mobile_number);
+    const data = this.buildFormData({
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      title: user.title,
+      birth_date: user.birth_date,
+      birth_month: user.birth_month,
+      birth_year: user.birth_year,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      company: user.company,
+      address1: user.address1,
+      address2: user.address2,
+      country: user.country,
+      zipcode: user.zipcode,
+      state: user.state,
+      city: user.city,
+      mobile_number: user.mobile_number,
+    });
 
     const response = await this.request.post(`${API_BASE_URL}${API_ENDPOINTS.CREATE_ACCOUNT}`, {
-      data: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data,
     });
 
     return response.json();
   }
 
   async verifyLogin(email: string, password: string): Promise<any> {
-    const formData = new globalThis.FormData();
-    formData.append('email', email);
-    formData.append('password', password);
+    const data = this.buildFormData({ email, password });
 
     const response = await this.request.post(`${API_BASE_URL}${API_ENDPOINTS.VERIFY_LOGIN}`, {
-      data: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data,
     });
 
     return response.json();
   }
 
   async deleteUser(email: string, password: string): Promise<any> {
-    const formData = new globalThis.FormData();
-    formData.append('email', email);
-    formData.append('password', password);
+    const data = this.buildFormData({ email, password });
 
     const response = await this.request.delete(`${API_BASE_URL}${API_ENDPOINTS.DELETE_ACCOUNT}`, {
-      data: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data,
     });
 
     return response.json();
@@ -69,27 +85,31 @@ export class UserService {
   }
 
   async updateUser(user: User): Promise<any> {
-    const formData = new globalThis.FormData();
-    if (user.name) formData.append('name', user.name);
-    if (user.email) formData.append('email', user.email);
-    if (user.password) formData.append('password', user.password);
-    if (user.title) formData.append('title', user.title);
-    if (user.birth_date) formData.append('birth_date', user.birth_date);
-    if (user.birth_month) formData.append('birth_month', user.birth_month);
-    if (user.birth_year) formData.append('birth_year', user.birth_year);
-    if (user.firstname) formData.append('firstname', user.firstname);
-    if (user.lastname) formData.append('lastname', user.lastname);
-    if (user.company) formData.append('company', user.company);
-    if (user.address1) formData.append('address1', user.address1);
-    if (user.address2) formData.append('address2', user.address2);
-    if (user.country) formData.append('country', user.country);
-    if (user.zipcode) formData.append('zipcode', user.zipcode);
-    if (user.state) formData.append('state', user.state);
-    if (user.city) formData.append('city', user.city);
-    if (user.mobile_number) formData.append('mobile_number', user.mobile_number);
+    const data = this.buildFormData({
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      title: user.title,
+      birth_date: user.birth_date,
+      birth_month: user.birth_month,
+      birth_year: user.birth_year,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      company: user.company,
+      address1: user.address1,
+      address2: user.address2,
+      country: user.country,
+      zipcode: user.zipcode,
+      state: user.state,
+      city: user.city,
+      mobile_number: user.mobile_number,
+    });
 
     const response = await this.request.put(`${API_BASE_URL}${API_ENDPOINTS.UPDATE_ACCOUNT}`, {
-      data: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data,
     });
 
     return response.json();

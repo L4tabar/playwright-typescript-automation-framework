@@ -32,11 +32,11 @@ export class ProductService {
   }
 
   async searchProduct(searchTerm: string): Promise<any> {
-    const formData = new globalThis.FormData();
-    formData.append('search_product', searchTerm);
-
     const response = await this.request.post(`${API_BASE_URL}${API_ENDPOINTS.SEARCH_PRODUCT}`, {
-      data: formData,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data: `search_product=${encodeURIComponent(searchTerm)}`,
     });
 
     return response.json();
