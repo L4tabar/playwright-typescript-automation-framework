@@ -106,7 +106,8 @@ test.describe('Integration Tests - UI + API', () => {
       const apiProducts = await productService.getAllProducts();
       expect(apiProducts.responseCode).toBe(200);
 
-      const firstProduct = apiProducts.products[0];
+      expect(apiProducts.products).toBeDefined();
+      const firstProduct = apiProducts.products![0];
 
       await test.step('Verify same product data in UI', async () => {
         await homePage.navigateToProducts();
@@ -131,9 +132,7 @@ test.describe('Integration Tests - UI + API', () => {
       const apiSearchResults = await productService.searchProduct(searchTerm);
       expect(apiSearchResults.responseCode).toBe(200);
 
-      if (apiSearchResults.products.length > 0) {
-        const firstApiProduct = apiSearchResults.products[0];
-
+      if (apiSearchResults.products && apiSearchResults.products.length > 0) {
         await test.step('Verify search results in UI', async () => {
           await homePage.navigateToProducts();
 
@@ -202,8 +201,9 @@ test.describe('Integration Tests - UI + API', () => {
     await test.step('Retrieve user data', async () => {
       const getUserResponse = await userService.getUserByEmail(user.email);
       expect(getUserResponse.responseCode).toBe(200);
-      expect(getUserResponse.user.email).toBe(user.email);
-      expect(getUserResponse.user.name).toBe(user.name);
+      expect(getUserResponse.user).toBeDefined();
+      expect(getUserResponse.user!.email).toBe(user.email);
+      expect(getUserResponse.user!.name).toBe(user.name);
     });
 
     await test.step('Update user data', async () => {
@@ -247,7 +247,7 @@ test.describe('Integration Tests - UI + API', () => {
       const searchResults = await productService.searchProduct('blue');
       expect(searchResults.responseCode).toBe(200);
 
-      if (searchResults.products.length > 0) {
+      if (searchResults.products && searchResults.products.length > 0) {
         const targetProduct = searchResults.products[0];
 
         await test.step('Add searched product to cart via UI', async () => {

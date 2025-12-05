@@ -15,7 +15,8 @@ test.describe('Product API Tests', () => {
       expect(response).toHaveProperty('responseCode');
       expect(response.responseCode).toBe(200);
       expect(response).toHaveProperty('products');
-      expect(Array.isArray(response.products)).toBeTruthy();
+      expect(response.products).toBeDefined();
+      if (!Array.isArray(response.products)) return;
       expect(response.products.length).toBeGreaterThan(0);
 
       // Verify product structure
@@ -36,7 +37,9 @@ test.describe('Product API Tests', () => {
       expect(response).toHaveProperty('responseCode');
       expect(response.responseCode).toBe(200);
       expect(response).toHaveProperty('products');
+      expect(response.products).toBeDefined();
       expect(Array.isArray(response.products)).toBeTruthy();
+      if (!Array.isArray(response.products)) return;
 
       // Verify search results contain the search term
       if (response.products.length > 0) {
@@ -54,7 +57,9 @@ test.describe('Product API Tests', () => {
       expect(response).toHaveProperty('responseCode');
       expect(response.responseCode).toBe(200);
       expect(response).toHaveProperty('products');
+      expect(response.products).toBeDefined();
       expect(Array.isArray(response.products)).toBeTruthy();
+      if (!Array.isArray(response.products)) return;
       expect(response.products.length).toBe(0);
     });
   });
@@ -66,7 +71,9 @@ test.describe('Product API Tests', () => {
       expect(response).toHaveProperty('responseCode');
       expect(response.responseCode).toBe(200);
       expect(response).toHaveProperty('brands');
+      expect(response.brands).toBeDefined();
       expect(Array.isArray(response.brands)).toBeTruthy();
+      if (!Array.isArray(response.brands)) return;
       expect(response.brands.length).toBeGreaterThan(0);
 
       // Verify brand structure
@@ -125,8 +132,9 @@ test.describe('Product API Tests', () => {
       const response = await productService.getAllProducts();
       const products = response.products;
 
+      expect(products).toBeDefined();
       // Take a sample product and validate its complete structure
-      const sampleProduct = products[0];
+      const sampleProduct = products![0];
 
       // Required fields
       expect(sampleProduct).toHaveProperty('id');
@@ -165,8 +173,9 @@ test.describe('Product API Tests', () => {
       const response = await productService.getAllProducts();
       const products = response.products;
 
+      expect(products).toBeDefined();
       // Verify price format (should start with 'Rs.')
-      products.forEach((product: Product) => {
+      products!.forEach((product: Product) => {
         expect(product.price).toMatch(/^Rs\. \d+$/);
       });
     });
