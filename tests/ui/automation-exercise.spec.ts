@@ -23,7 +23,7 @@ test.describe('Automation Exercise Website Tests', () => {
       'button:has-text("Agree")',
       '.fc-consent-root',
       '#onetrust-accept-btn-handler',
-      '[data-testid="consent-banner"]'
+      '[data-testid="consent-banner"]',
     ];
 
     // Try to find and click cookie accept button
@@ -37,7 +37,7 @@ test.describe('Automation Exercise Website Tests', () => {
           break;
         }
       } catch (error) {
-        // Continue to next selector if this one doesn't work
+        console.log(error);
         continue;
       }
     }
@@ -47,7 +47,7 @@ test.describe('Automation Exercise Website Tests', () => {
     await page.waitForTimeout(5000);
 
     // Verify we're still on the correct page
-    await expect(page.url()).toContain('automationexercise.com');
+    expect(page.url()).toContain('automationexercise.com');
 
     console.log('Test completed successfully');
   });
