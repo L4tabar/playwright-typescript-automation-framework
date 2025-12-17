@@ -78,6 +78,13 @@ jobs:
         continue-on-error: true
         run: npm run test:ui
 
+      - name: Publish JUnit test results
+        uses: dorny/test-reporter@v1
+        with:
+          name: Playwright Tests
+          path: junit/results.xml
+          reporter: java-junit
+
       - name: Download previous history
         uses: actions/checkout@v4
         with:
