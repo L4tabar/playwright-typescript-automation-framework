@@ -1,4 +1,4 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","299","should verify basic Playwright functionality","ui","2025-12-18","passed","2025-12-18","Dummy Test Suite","ui/dummy.spec.ts","",""
-"","7993","Accept cookie banner and wait 5 seconds","ui","2025-12-18","failed","2025-12-18","","ui/cookie-banner.spec.ts","",""
-"","8935","should navigate to automation exercise and accept cookie banner","ui","2025-12-18","passed","2025-12-18","Automation Exercise Website Tests","ui/automation-exercise.spec.ts","",""
+"","9109","should navigate to automation exercise and accept cookie banner","ui","2025-12-18","passed","2025-12-18","Automation Exercise Website Tests","ui/automation-exercise.spec.ts","",""
+"","303","should verify basic Playwright functionality","ui","2025-12-18","passed","2025-12-18","Dummy Test Suite","ui/dummy.spec.ts","",""
+"","7818","Accept cookie banner and wait 5 seconds","ui","2025-12-18","failed","2025-12-18","","ui/cookie-banner.spec.ts","",""
