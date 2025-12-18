@@ -80,6 +80,7 @@ jobs:
         run: npm run test:ui
 
       - name: Publish JUnit test results
+        continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
           name: Playwright Tests
