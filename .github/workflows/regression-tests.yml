@@ -8,7 +8,7 @@ on:
 
 
 jobs:
-  setup:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,34 +18,19 @@ jobs:
           node-version: 20
 
       - name: Cache node_modules
+        id: cache
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
+      - name: Install dependencies (only if cache missed)
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
-
-  lint:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Restore node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - run: npm run lint
 
   ui-tests:
-    needs: setup
     runs-on: ubuntu-latest
     continue-on-error: true
 
@@ -58,11 +43,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Restore node_modules
+      - name: Cache node_modules
+        id: cache
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies (only if cache missed)
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
