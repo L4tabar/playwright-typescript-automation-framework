@@ -5,13 +5,13 @@ This repository contains Playwright-based TypeScript automation frameworks for U
 
 ## Architecture & Key Files
 - **Layered Structure**:
-  - `tests/`: Test specs (API, UI, or combined)
-  - `services/` or `api/`: Service layer for API calls (e.g., booking, auth)
-  - `pages/`: Page Object Model for UI automation (for e-commerce UI tests)
-  - `utils/`: Utility functions (data builders, factories, helpers)
-  - `config/`: Centralized configuration (endpoints, credentials, test data)
+  - `tests/`: Test specs (API, UI)
+  - `api/services/`: Service layer for API calls (e.g., booking, auth)
+  - `ui/pages/`: Page Object Model for UI automation (for e-commerce UI tests)
+  - `utils/`: Utility functions (helpers)
+  - `config/`: Centralized configuration (endpoints)
 - **`playwright.config.ts`**: Main Playwright config (testDir, projects, retries, reporting, env vars)
-- **`.github/workflows/playwright.yml`**: CI pipeline (test, lint, report upload)
+- **`.github/workflows/*.yml`**: CI pipeline (test, lint, report upload)
 - **Allure reporting**: Integrate via Playwright reporter config and CI artifact upload
 - **ESLint, Prettier, Husky**: For linting, formatting, and pre-commit checks
 

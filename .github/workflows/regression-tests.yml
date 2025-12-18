@@ -11,17 +11,11 @@ jobs:
   setup:
     runs-on: ubuntu-latest
 
-    outputs:
-      cache-key: ${{ steps.cache-key.outputs.key }}
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - id: cache-key
-        run: echo "key=node-modules-${{ hashFiles('package-lock.json') }}" >> $GITHUB_OUTPUT
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -46,7 +40,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ needs.setup.outputs.cache-key }}
+          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - run: npm run lint
 
@@ -58,8 +52,6 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
-        with:
-          ref: main
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -70,7 +62,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ needs.setup.outputs.cache-key }}
+          key: node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
