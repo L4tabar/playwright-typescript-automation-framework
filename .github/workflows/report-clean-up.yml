@@ -1,6 +1,7 @@
 name: Clean up gh-pages folders
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'
 
@@ -18,21 +19,22 @@ jobs:
       - name: List remote branches
         id: branches
         run: |
-          # Getting all remote branches
           git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
-          EXISTING_BRANCHES=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | sed 's|origin/||')
-          echo "existing=$EXISTING_BRANCHES" >> $GITHUB_OUTPUT
+          git for-each-ref --format='%(refname:short)' refs/remotes/origin/ | sed 's|origin/||' > branches.txt
+          echo "existing<<EOF" >> $GITHUB_OUTPUT
+          cat branches.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Clean up deleted branch folders
         run: |
-          EXISTING=(${{ steps.branches.outputs.existing }})
-          echo "Existing branches: ${EXISTING[@]}"
+          EXISTING=()
+          while IFS= read -r branch; do
+            EXISTING+=("$branch")
+          done <<< "${{ steps.branches.outputs.existing }}"
 
-          # Folders in the gh-pages branch
           for DIR in */ ; do
             DIR=${DIR%/}
             if [[ ! " ${EXISTING[@]} " =~ " ${DIR} " ]]; then
-              echo "Deleting folder for deleted branch: $DIR"
               rm -rf "$DIR"
             fi
           done
@@ -43,6 +45,4 @@ jobs:
             git add .
             git commit -m "Remove gh-pages folders for deleted branches"
             git push origin gh-pages
-          else
-            echo "No folders to remove. Nothing to commit."
           fi
