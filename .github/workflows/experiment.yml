@@ -1,0 +1,16 @@
+name: Test Secret Nesting
+
+on:
+  workflow_dispatch:
+    inputs:
+      env_name:
+        required: true
+        default: QAS
+        type: string
+
+jobs:
+  test-nesting:
+    uses: ./.github/workflows/configurable.yml
+    with:
+      env_name: ${{ inputs.env_name }}
+    secrets: inherit

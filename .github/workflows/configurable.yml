@@ -1,0 +1,31 @@
+name: Configurable
+
+on:
+  workflow_call:
+    inputs:
+      env_name:
+        required: true
+        default: QAS
+        type: string
+
+jobs:
+  test-config:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    env:
+      TEST_S: ${{ secrets.TEST_S }}
+    steps:
+      - name: test
+        run: |
+          echo "Trying to access secret dynamically as: ${{ vars.TEST }}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'node'
+
+      - name: Run
+        run: node gh_test.js
